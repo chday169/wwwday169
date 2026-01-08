@@ -1,0 +1,96 @@
+// ==================== Scratch 教材瀏覽器核心代碼 ====================
+
+// 根據當前頁面獲取正確的路徑配置
+const pathConfig = PathResolver.getBasePath();
+const manifestURL = pathConfig.manifest;
+
+let pdfList = [];
+let filteredList = [];
+let currentIndex = -1;
+let currentPage = 1;
+let totalPages = 1;
+let currentPDF = null;
+let hasLikedCurrentPDF = false;
+let currentScale = 1.5;
+
+// Scratch 難度等級
+const levels = {
+  'all': '全部教材',
+  'beginner': '初階入門',
+  'intermediate': '中階應用', 
+  'advanced': '進階技巧',
+  'project': '專題實作'
+};
+
+async function loadPDFList() {
+  try {
+    document.getElementById('statusText').innerHTML = '<span class="loading"></span>載入 Scratch 教材清單中...';
+    
+    console.log('正在載入 manifest:', manifestURL);
+    
+    const res = await fetch(manifestURL);
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+    
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error('manifest.json 應為陣列格式');
+    
+    // 修正PDF路徑
+    pdfList = data.map((item, index) => {
+      const fixedUrl = PathResolver.fixPDFPath(item.url, pathConfig.pdfBase);
+      console.log(`PDF ${index}: ${item.title} -> ${fixedUrl}`);
+      
+      return {
+        ...item,
+        url: fixedUrl,
+        originalIndex: index
+      };
+    });
+    
+    console.log('處理後的PDF列表:', pdfList);
+    
+    // 載入本地儲存的統計數據
+    loadLocalStats();
+
+    // 初始化過濾列表
+    filteredList = [...pdfList];
+    updatePDFSelect();
+    
+    if (pdfList.length > 0) {
+      showPDF(0);
+    } else {
+      document.getElementById('statusText').textContent = '❌ 沒有可用的 Scratch 教材';
+    }
+  } catch (err) {
+    console.error('載入錯誤：', err);
+    document.getElementById('statusText').innerHTML = 
+      `❌ 無法載入 Scratch 教材清單: ${err.message}<br>
+      <small>請檢查: ${manifestURL} 是否存在</small>`;
+  }
+}
+
+function filterLevel(level) {
+  // 更新按鈕狀態
+  document.querySelectorAll('.level-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.target.classList.add('active');
+
+  if (level === 'all') {
+    filteredList = [...pdfList];
+  } else {
+    filteredList = pdfList.filter(item => item.level === level);
+  }
+
+  updatePDFSelect();
+  
+  if (filteredList.length > 0) {
+    showPDF(0);
+  } else {
+    document.getElementById('statusText').textContent = `❌ 沒有${levels[level]}相關教材`;
+    clearCanvas();
+  }
+}
+
+// 其餘函數保持不變，只需確保使用 pathConfig.statsKey 替代硬編碼的 'scr_stats'

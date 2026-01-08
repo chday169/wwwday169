@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎥 YouTube 精選影片 | CHDAY169 教學影片精選</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .video-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: var(--space-md);
+    }
+
+    .video-player-section {
+      background: var(--bg-white);
+      border-radius: var(--radius-large);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-light);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .video-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto var(--space-md) auto;
+      border-radius: var(--radius-medium);
+      overflow: hidden;
+      box-shadow: var(--shadow-medium);
+    }
+
+    .video-wrapper iframe {
+      width: 100%;
+      height: 450px;
+      border: none;
+      display: block;
+    }
+
+    .video-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+      flex-wrap: wrap;
+    }
+
+    .video-btn {
+      padding: var(--space-sm) var(--space-lg);
+      font-size: 1.1rem;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--radius-medium);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    .video-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+    }
+
+    .video-btn:disabled {
+      background: var(--text-light);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .video-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: var(--space-md) 0;
+      padding: var(--space-md);
+      background: var(--bg-light);
+      border-radius: var(--radius-medium);
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    .video-counter {
+      font-weight: 600;
+      color: var(--text-dark);
+      font-size: 1.1rem;
+    }
+
+    .video-category {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .video-description {
+      text-align: left;
+      color: var(--text-medium);
+      line-height: 1.6;
+      margin: var(--space-md) 0;
+      padding: var(--space-md);
+      background: var(--bg-light);
+      border-radius: var(--radius-medium);
+    }
+
+    .video-playlist {
+      background: var(--bg-white);
+      border-radius: var(--radius-large);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-light);
+      margin-bottom: var(--space-lg);
+    }
+
+    .playlist-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: var(--space-md);
+      text-align: center;
+    }
+
+    .playlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--space-md);
+    }
+
+    .playlist-item {
+      background: var(--bg-light);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-medium);
+      padding: var(--space-md);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .playlist-item:hover {
+      background: var(--primary-light);
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+    }
+
+    .playlist-item.active {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    .playlist-item.coming-soon {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: var(--bg-light);
+    }
+
+    .playlist-item.coming-soon:hover {
+      transform: none;
+      background: var(--bg-light);
+      border-color: var(--border-color);
+    }
+
+    .playlist-thumbnail {
+      width: 80px;
+      height: 60px;
+      background: var(--border-color);
+      border-radius: var(--radius-small);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .playlist-info {
+      flex: 1;
+    }
+
+    .playlist-video-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-size: 0.95rem;
+    }
+
+    .playlist-video-duration {
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+
+    .coming-soon-badge {
+      font-size: 0.7rem;
+      color: var(--text-light);
+      font-style: italic;
+      margin-left: 8px;
+    }
+
+    .category-filter {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-sm);
+      margin: var(--space-lg) 0;
+      flex-wrap: wrap;
+    }
+
+    .category-btn {
+      padding: 8px 16px;
+      background: var(--bg-light);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .category-btn.active {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    .subscribe-section {
+      text-align: center;
+      margin: var(--space-xl) 0;
+      padding: var(--space-lg);
+      background: linear-gradient(135deg, var(--primary-light), var(--bg-light));
+      border-radius: var(--radius-large);
+    }
+
+    .channel-link {
+      display: inline-block;
+      margin-top: var(--space-md);
+      padding: var(--space-md) var(--space-lg);
+      background: #ff0000;
+      color: white;
+      text-decoration: none;
+      border-radius: var(--radius-medium);
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .channel-link:hover {
+      background: #cc0000;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+    }
+
+    .more-videos-notice {
+      text-align: center;
+      padding: var(--space-lg);
+      background: var(--bg-light);
+      border-radius: var(--radius-medium);
+      margin: var(--space-lg) 0;
+    }
+
+    @media (max-width: 768px) {
+      .video-wrapper iframe {
+        height: 300px;
+      }
+      
+      .video-controls {
+        flex-direction: column;
+      }
+      
+      .video-btn {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .video-info {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .playlist-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .video-wrapper iframe {
+        height: 250px;
+      }
+      
+      .video-title {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body class="container">
+  <header class="page-header">
+    <h1>🎥 YouTube 精選影片</h1>
+    <p class="subtitle">CHDAY169 Scratch 程式設計教學影片精選</p>
+  </header>
+
+  <nav class="breadcrumb">
+    <a href="index.html">首頁</a> &gt; <span>YouTube 精選影片</span>
+  </nav>
+
+  <main class="video-container">
+    <!-- 分類篩選 -->
+    <div class="category-filter">
+      <button class="category-btn active" onclick="filterVideos('all')">全部影片</button>
+      <button class="category-btn" onclick="filterVideos('scratch')">Scratch 教學</button>
+      <button class="category-btn" onclick="filterVideos('coming-soon')">即將上線</button>
+    </div>
+
+    <!-- 影片播放器區塊 -->
+    <section class="video-player-section">
+      <div class="video-title" id="video-title">載入中...</div>
+      
+      <div class="video-wrapper">
+        <iframe id="video-player" width="560" height="315" src="" 
+                frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen title="YouTube 教學影片">
+        </iframe>
+      </div>
+
+      <div class="video-info">
+        <div class="video-counter" id="video-counter">影片 1 / 3</div>
+        <div class="video-category" id="video-category">Scratch 教學</div>
+      </div>
+
+      <div class="video-description" id="video-description">
+        影片說明載入中...
+      </div>
+
+      <div class="video-controls">
+        <button onclick="prevVideo()" class="video-btn" id="prev-btn">
+          ⬅️ 上一部影片
+        </button>
+        <button onclick="nextVideo()" class="video-btn" id="next-btn">
+          ➡️ 下一部影片
+        </button>
+        <button onclick="toggleAutoplay()" class="video-btn" id="autoplay-btn">
+          🔄 自動播放: 關閉
+        </button>
+      </div>
+    </section>
+
+    <!-- 播放清單 -->
+    <section class="video-playlist">
+      <h3 class="playlist-title">📋 影片播放清單</h3>
+      <div class="playlist-grid" id="playlist-grid">
+        <!-- 播放清單項目會由 JavaScript 動態生成 -->
+      </div>
+    </section>
+
+    <!-- 更多影片通知 -->
+    <section class="more-videos-notice">
+      <h3>🎯 更多精彩影片正在製作中！</h3>
+      <p>我們正在積極準備更多 Scratch 教學和地質科學相關影片，敬請期待！</p>
+    </section>
+
+    <!-- 頻道連結區塊 -->
+    <section class="subscribe-section">
+      <h3>📺 觀看更多影片</h3>
+      <p>歡迎前往我的 YouTube 頻道觀看所有教學影片！</p>
+      <a href="https://www.youtube.com/@chday7919" target="_blank" class="channel-link">
+        🎬 前往 CHDAY169 YouTube 頻道
+      </a>
+      <div style="margin-top: var(--space-md);">
+        <p style="font-size: 0.9rem; color: var(--text-medium);">
+          頻道內有完整的教學播放清單和更多精彩內容！
+        </p>
+      </div>
+    </section>
+
+    <!-- 訂閱區塊 -->
+    <section class="subscribe-section">
+      <div class="subscribe-box">
+        <h3>📢 訂閱頻道獲得更新</h3>
+        <p>喜歡我的教學影片嗎？別忘了訂閱 YouTube 頻道，獲得最新影片通知！</p>
+        <a href="https://www.youtube.com/@chday7919?sub_confirmation=1" target="_blank" 
+           class="channel-link" rel="noopener noreferrer">
+          ✅ 訂閱 CHDAY169 頻道
+        </a>
+        <p style="margin-top: var(--space-sm); font-size: 0.9rem; color: var(--text-light);">
+          訂閱後即可第一時間收到新影片通知！
+        </p>
+      </div>
+    </section>
+
+    <!-- 相關資源 -->
+    <section class="resources-section">
+      <div class="resource-card">
+        <h3>🔗 相關學習資源</h3>
+        <div class="resource-links">
+          <a href="viewer_scr.html" class="btn btn-primary">🎨 Scratch 教材</a>
+          <a href="viewer_geo.html" class="btn btn-secondary">🪨 地質教材</a>
+          <a href="resources.html" class="btn btn-outline">📚 更多資源</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="page-footer">
+    <div class="navigation-buttons">
+      <a href="index.html" class="btn btn-primary">⬅️ 返回首頁</a>
+      <a href="monthly.html" class="btn btn-secondary">📅 每月議題</a>
+      <a href="comments.html" class="btn btn-outline">💬 影片回饋</a>
+    </div>
+    
+    <div class="footer-info">
+      <p>&copy; 2025 CHDAY169 教材平台 | Created by chday169</p>
+      <p class="stats-info">📊 影片頁面瀏覽次數: <span id="views_video">0</span></p>
+    </div>
+  </footer>
+
+  <script>
+    // 影片資料庫 - 只包含已完成的3部影片
+    const videos = [
+      {
+        title: "Scratch動畫設計教學：他花歸去馬蹄香",
+        url: "https://www.youtube.com/embed/aCZPHX13ZnE",
+        category: "scratch",
+        description: "學習如何使用 Scratch 創作優美的動畫效果，掌握角色移動與場景變換的程式設計技巧。本教學適合初學者，從基礎動畫概念到進階技巧全面講解。",
+        duration: "15:30",
+        thumbnail: "🎨",
+        status: "ready"
+      },
+      {
+        title: "Scratch電子鐘設計動畫教學",
+        url: "https://www.youtube.com/embed/Aql3YLDG2a8",
+        category: "scratch",
+        description: "實作 Scratch 電子鐘專案，學習時間處理與數字顯示的程式邏輯設計。包含時鐘動畫、數字變換和時間計算等實用技巧。",
+        duration: "12:45",
+        thumbnail: "⏰",
+        status: "ready"
+      },
+      {
+        title: "Scratch多功能電子計算器設計動畫教學",
+        url: "https://www.youtube.com/embed/j_eMTP5-lcA",
+        category: "scratch",
+        description: "建立功能完整的計算器專案，包含四則運算與進階數學函數實作。學習變數處理、條件判斷和函數設計等重要程式概念。",
+        duration: "18:20",
+        thumbnail: "🧮",
+        status: "ready"
+      },
+      {
+        title: "更多 Scratch 教學影片",
+        url: "",
+        category: "coming-soon",
+        description: "我們正在準備更多精彩的 Scratch 教學內容，包含遊戲設計、動畫製作和程式邏輯等主題，敬請期待！",
+        duration: "即將上線",
+        thumbnail: "🚧",
+        status: "coming-soon"
+      },
+      {
+        title: "地質科學入門系列",
+        url: "",
+        category: "coming-soon",
+        description: "地質科學教學影片正在籌備中，將包含岩石礦物、地質構造和野外調查等豐富內容。",
+        duration: "籌備中",
+        thumbnail: "🪨",
+        status: "coming-soon"
+      },
+      {
+        title: "動畫設計進階技巧",
+        url: "",
+        category: "coming-soon",
+        description: "進階動畫設計教學，包含角色動畫、特效製作和故事敘事等專業技巧。",
+        duration: "規劃中",
+        thumbnail: "🎭",
+        status: "coming-soon"
+      }
+    ];
+
+    let currentIndex = 0;
+    let filteredVideos = [];
+    let autoplay = false;
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      filterVideos('all');
+      
+      // 載入瀏覽次數
+      const views = localStorage.getItem('views_video') || '0';
+      document.getElementById('views_video').textContent = views;
+      
+      if (typeof autoCountView === 'function') {
+        autoCountView('video');
+      }
+    });
+
+    function loadVideo(index) {
+      if (index < 0 || index >= filteredVideos.length) return;
+      
+      currentIndex = index;
+      const video = filteredVideos[index];
+      
+      document.getElementById("video-title").textContent = video.title;
+      
+      // 如果是即將上線的影片，不載入 YouTube iframe
+      if (video.status === "ready") {
+        document.getElementById("video-player").src = video.url + (autoplay ? "?autoplay=1" : "");
+      } else {
+        document.getElementById("video-player").src = "";
+      }
+      
+      document.getElementById("video-description").textContent = video.description;
+      document.getElementById("video-counter").textContent = `影片 ${index + 1} / ${filteredVideos.length}`;
+      document.getElementById("video-category").textContent = getCategoryName(video.category);
+      
+      updatePlaylist();
+      updateControls();
+    }
+
+    function getCategoryName(category) {
+      const categories = {
+        'all': '全部影片',
+        'scratch': 'Scratch 教學',
+        'geology': '地質科學',
+        'animation': '動畫設計',
+        'coming-soon': '即將上線'
+      };
+      return categories[category] || category;
+    }
+
+    function prevVideo() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        loadVideo(currentIndex);
+      }
+    }
+
+    function nextVideo() {
+      if (currentIndex < filteredVideos.length - 1) {
+        currentIndex++;
+        loadVideo(currentIndex);
+      }
+    }
+
+    function filterVideos(category) {
+      // 更新按鈕狀態
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      if (category === 'all') {
+        // 顯示所有影片，包括即將上線的
+        filteredVideos = [...videos];
+      } else if (category === 'scratch') {
+        // 只顯示已準備好的 Scratch 影片
+        filteredVideos = videos.filter(video => video.category === 'scratch' && video.status === 'ready');
+      } else if (category === 'coming-soon') {
+        // 顯示即將上線的影片
+        filteredVideos = videos.filter(video => video.status === 'coming-soon');
+      } else {
+        filteredVideos = videos.filter(video => video.category === category && video.status === 'ready');
+      }
+
+      currentIndex = 0;
+      if (filteredVideos.length > 0) {
+        loadVideo(currentIndex);
+      } else {
+        showNoVideosMessage();
+      }
+    }
+
+    function showNoVideosMessage() {
+      document.getElementById("video-title").textContent = "暫無可用影片";
+      document.getElementById("video-player").src = "";
+      document.getElementById("video-description").textContent = "此分類目前沒有可播放的影片，請選擇其他分類或稍後再來。";
+      document.getElementById("video-counter").textContent = `影片 0 / 0`;
+      document.getElementById("video-category").textContent = "無影片";
+      
+      updatePlaylist();
+      updateControls();
+    }
+
+    function updatePlaylist() {
+      const playlistGrid = document.getElementById('playlist-grid');
+      playlistGrid.innerHTML = '';
+
+      filteredVideos.forEach((video, index) => {
+        const item = document.createElement('div');
+        
+        if (video.status === "coming-soon") {
+          item.className = 'playlist-item coming-soon';
+          item.onclick = () => showComingSoonMessage();
+        } else {
+          item.className = `playlist-item ${index === currentIndex ? 'active' : ''}`;
+          item.onclick = () => loadVideo(index);
+        }
+        
+        item.innerHTML = `
+          <div class="playlist-thumbnail">${video.thumbnail}</div>
+          <div class="playlist-info">
+            <div class="playlist-video-title">
+              ${video.title}
+              ${video.status === "coming-soon" ? '<span class="coming-soon-badge">(準備中)</span>' : ''}
+            </div>
+            <div class="playlist-video-duration">${video.duration} • ${getCategoryName(video.category)}</div>
+          </div>
+        `;
+        
+        playlistGrid.appendChild(item);
+      });
+    }
+
+    function showComingSoonMessage() {
+      alert("這部影片正在準備中，敬請期待！\n\n歡迎先前往我們的 YouTube 頻道觀看其他現有影片！");
+    }
+
+    function updateControls() {
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+      
+      if (prevBtn && nextBtn) {
+        prevBtn.disabled = currentIndex === 0 || filteredVideos.length === 0;
+        nextBtn.disabled = currentIndex === filteredVideos.length - 1 || filteredVideos.length === 0;
+      }
+    }
+
+    function toggleAutoplay() {
+      autoplay = !autoplay;
+      document.getElementById('autoplay-btn').textContent = 
+        `🔄 自動播放: ${autoplay ? '開啟' : '關閉'}`;
+    }
+
+    // 鍵盤快捷鍵支持
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'ArrowLeft') {
+        prevVideo();
+      } else if (event.key === 'ArrowRight') {
+        nextVideo();
+      } else if (event.key === ' ') {
+        event.preventDefault();
+        toggleAutoplay();
+      }
+    });
+
+    // 點擊頻道連結時的事件
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('channel-link')) {
+        // 可以在此添加統計代碼
+        console.log('用戶點擊了頻道連結');
+      }
+    });
+  </script>
+</body>
+</html>
