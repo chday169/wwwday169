@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📊 網站統計 | CHDAY169 教材平台數據分析</title>
+  <link href="assets/style.css" rel="stylesheet">
+  <script src="assets/script.js"></script>
+  <style>
+    .stats-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: var(--space-md);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+
+    .stat-card {
+      background: var(--bg-white);
+      border-radius: var(--radius-large);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-light);
+      border: 1px solid var(--border-color);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin-bottom: var(--space-xs);
+    }
+
+    .stat-label {
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+
+    .charts-section {
+      margin: var(--space-xl) 0;
+    }
+
+    .chart-container {
+      background: var(--bg-white);
+      border-radius: var(--radius-large);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-light);
+      margin-bottom: var(--space-lg);
+    }
+
+    .chart-title {
+      color: var(--text-dark);
+      margin-bottom: var(--space-md);
+      text-align: center;
+    }
+
+    .chart {
+      height: 300px;
+      background: var(--bg-light);
+      border-radius: var(--radius-medium);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      padding: var(--space-md);
+      gap: var(--space-sm);
+    }
+
+    .bar {
+      background: linear-gradient(to top, var(--primary-color), var(--primary-dark));
+      border-radius: var(--radius-small) var(--radius-small) 0 0;
+      position: relative;
+      flex: 1;
+      transition: all 0.3s ease;
+      min-width: 40px;
+    }
+
+    .bar:hover {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+
+    .bar-label {
+      position: absolute;
+      bottom: -25px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-medium);
+    }
+
+    .bar-value {
+      position: absolute;
+      top: -25px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: var(--text-dark);
+    }
+
+    .stats-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-lg) 0;
+      background: var(--bg-white);
+      border-radius: var(--radius-medium);
+      overflow: hidden;
+      box-shadow: var(--shadow-light);
+    }
+
+    .stats-table th,
+    .stats-table td {
+      padding: var(--space-sm);
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .stats-table th {
+      background: var(--primary-light);
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+
+    .stats-table tr:hover {
+      background: var(--bg-light);
+    }
+
+    .admin-controls {
+      background: var(--bg-light);
+      border-radius: var(--radius-large);
+      padding: var(--space-lg);
+      margin: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .export-btn {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      border: none;
+      padding: var(--space-sm) var(--space-lg);
+      border-radius: var(--radius-medium);
+      cursor: pointer;
+      font-size: 1rem;
+      margin: 0 var(--space-xs);
+      transition: all 0.3s ease;
+    }
+
+    .export-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+    }
+
+    .reset-btn {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      color: white;
+      border: none;
+      padding: var(--space-sm) var(--space-lg);
+      border-radius: var(--radius-medium);
+      cursor: pointer;
+      font-size: 1rem;
+      margin: 0 var(--space-xs);
+      transition: all 0.3s ease;
+    }
+
+    .reset-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+    }
+
+    .last-updated {
+      text-align: center;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      margin-top: var(--space-md);
+    }
+
+    .no-data {
+      text-align: center;
+      padding: var(--space-xl);
+      color: var(--text-light);
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .chart {
+        flex-direction: column;
+        height: auto;
+        align-items: center;
+      }
+      
+      .bar {
+        width: 80%;
+        height: 40px;
+        margin-bottom: var(--space-lg);
+      }
+      
+      .bar-label {
+        bottom: -20px;
+      }
+      
+      .bar-value {
+        top: -20px;
+      }
+    }
+  </style>
+</head>
+<body class="container">
+  <header class="page-header">
+    <h1>📊 網站統計</h1>
+    <p class="subtitle">CHDAY169 教材平台數據分析與訪問統計</p>
+  </header>
+
+  <nav class="breadcrumb">
+    <a href="index.html">首頁</a> &gt; <span>網站統計</span>
+  </nav>
+
+  <main class="stats-container">
+    <!-- 總覽統計 -->
+    <section class="overview-section">
+      <h2>📈 總覽統計</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="totalVisits">0</div>
+          <div class="stat-label">總訪問次數</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="totalPages">0</div>
+          <div class="stat-label">已統計頁面</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="totalLikes">0</div>
+          <div class="stat-label">總點讚數</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="activeDays">0</div>
+          <div class="stat-label">活躍天數</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 頁面訪問統計 -->
+    <section class="charts-section">
+      <h2>🌐 頁面訪問統計</h2>
+      <div class="chart-container">
+        <h3 class="chart-title">各頁面訪問量排名</h3>
+        <div class="chart" id="pageViewsChart">
+          <!-- 動態生成柱狀圖 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 詳細數據表格 -->
+    <section class="table-section">
+      <h2>📋 詳細統計數據</h2>
+      <table class="stats-table">
+        <thead>
+          <tr>
+            <th>頁面名稱</th>
+            <th>訪問次數</th>
+            <th>點讚數</th>
+            <th>最後訪問</th>
+            <th>日均訪問</th>
+          </tr>
+        </thead>
+        <tbody id="statsTableBody">
+          <!-- 動態生成表格數據 -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 每日訪問趨勢 -->
+    <section class="charts-section">
+      <h2>📅 每日訪問趨勢</h2>
+      <div class="chart-container">
+        <h3 class="chart-title">最近7天訪問趨勢</h3>
+        <div class="chart" id="dailyTrendsChart">
+          <!-- 動態生成趨勢圖 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 管理員控制 -->
+    <section class="admin-controls">
+      <h2>⚙️ 數據管理</h2>
+      <p>管理網站統計數據與匯出報告</p>
+      <div style="margin: var(--space-md) 0;">
+        <button class="export-btn" onclick="exportStats()">📥 匯出統計數據</button>
+        <button class="reset-btn" onclick="adminLogin()">🔄 重置統計數據</button>
+        <button class="export-btn" onclick="refreshStats()">🔄 重新整理</button>
+      </div>
+      <p class="last-updated">最後更新: <span id="lastUpdated">-</span></p>
+    </section>
+
+    <!-- 數據說明 -->
+    <section class="info-section">
+      <div class="info-card">
+        <h3>💡 統計說明</h3>
+        <ul>
+          <li>所有統計數據基於本地瀏覽器存儲 (localStorage)</li>
+          <li>訪問次數在每次頁面加載時自動記錄</li>
+          <li>點讚數需要用戶主動點擊"模擬點讚"按鈕</li>
+          <li>數據僅在當前瀏覽器中有效，清除瀏覽數據將重置統計</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="page-footer">
+    <div class="navigation-buttons">
+      <a href="index.html" class="btn btn-primary">⬅️ 回首頁</a>
+      <a href="search.html" class="btn btn-secondary">🔍 搜尋文章</a>
+      <a href="comments.html" class="btn btn-outline">💬 留言板</a>
+    </div>
+    
+    <div class="footer-info">
+      <p>&copy; 2025 CHDAY169 教材平台 | Created by chday169</p>
+    </div>
+  </footer>
+
+  <script>
+    // 統計數據處理
+    document.addEventListener('DOMContentLoaded', function() {
+      loadStats();
+      updateLastUpdated();
+    });
+
+    function loadStats() {
+      // 計算總訪問次數
+      const totalVisits = calculateTotalVisits();
+      document.getElementById('totalVisits').textContent = totalVisits.toLocaleString();
+
+      // 計算總頁面數
+      const pageCount = Object.keys(localStorage).filter(k => k.startsWith('views_')).length;
+      document.getElementById('totalPages').textContent = pageCount;
+
+      // 計算總點讚數
+      const totalLikes = calculateTotalLikes();
+      document.getElementById('totalLikes').textContent = totalLikes.toLocaleString();
+
+      // 計算活躍天數
+      const activeDays = calculateActiveDays();
+      document.getElementById('activeDays').textContent = activeDays;
+
+      // 生成頁面訪問圖表
+      generatePageViewsChart();
+
+      // 生成詳細數據表格
+      generateStatsTable();
+
+      // 生成每日趨勢圖
+      generateDailyTrendsChart();
+    }
+
+    function calculateTotalVisits() {
+      const keys = Object.keys(localStorage).filter(k => k.startsWith('views_'));
+      return keys.reduce((sum, k) => sum + parseInt(localStorage.getItem(k) || '0'), 0);
+    }
+
+    function calculateTotalLikes() {
+      const keys = Object.keys(localStorage).filter(k => k.startsWith('likes_'));
+      return keys.reduce((sum, k) => sum + parseInt(localStorage.getItem(k) || '0'), 0);
+    }
+
+    function calculateActiveDays() {
+      const dailyKeys = Object.keys(localStorage).filter(k => k.startsWith('daily_'));
+      const dates = new Set();
+      dailyKeys.forEach(key => {
+        const date = key.split('_')[1]; // daily_YYYY-MM-DD_pageId
+        if (date) dates.add(date);
+      });
+      return dates.size;
+    }
+
+    function generatePageViewsChart() {
+      const chart = document.getElementById('pageViewsChart');
+      chart.innerHTML = '';
+
+      // 獲取所有頁面訪問數據
+      const pageData = [];
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('views_')) {
+          const pageId = key.replace('views_', '');
+          const views = parseInt(localStorage.getItem(key) || '0');
+          const pageName = getPageDisplayName(pageId);
+          pageData.push({ name: pageName, views: views, id: pageId });
+        }
+      });
+
+      // 按訪問量排序並取前8名
+      pageData.sort((a, b) => b.views - a.views);
+      const topPages = pageData.slice(0, 8);
+
+      if (topPages.length === 0) {
+        chart.innerHTML = '<div class="no-data">暫無訪問數據</div>';
+        return;
+      }
+
+      // 計算最大訪問量用於比例計算
+      const maxViews = Math.max(...topPages.map(p => p.views));
+
+      topPages.forEach(page => {
+        const barHeight = maxViews > 0 ? (page.views / maxViews) * 80 + 20 : 20;
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        bar.style.height = `${barHeight}%`;
+        bar.title = `${page.name}: ${page.views} 次訪問`;
+
+        const value = document.createElement('div');
+        value.className = 'bar-value';
+        value.textContent = page.views;
+
+        const label = document.createElement('div');
+        label.className = 'bar-label';
+        label.textContent = page.name.length > 8 ? page.name.substring(0, 8) + '...' : page.name;
+
+        bar.appendChild(value);
+        bar.appendChild(label);
+        chart.appendChild(bar);
+      });
+    }
+
+    function generateStatsTable() {
+      const tableBody = document.getElementById('statsTableBody');
+      tableBody.innerHTML = '';
+
+      const pageData = [];
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('views_')) {
+          const pageId = key.replace('views_', '');
+          const views = parseInt(localStorage.getItem(key) || '0');
+          const likes = parseInt(localStorage.getItem(`likes_${pageId}`) || '0');
+          const pageName = getPageDisplayName(pageId);
+          
+          // 計算日均訪問（簡單估算）
+          const dailyAvg = Math.round(views / 30); // 假設30天
+
+          pageData.push({
+            name: pageName,
+            views: views,
+            likes: likes,
+            dailyAvg: dailyAvg,
+            lastVisit: getLastVisit(pageId)
+          });
+        }
+      });
+
+      // 按訪問量排序
+      pageData.sort((a, b) => b.views - a.views);
+
+      if (pageData.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="5" class="no-data">暫無統計數據</td></tr>';
+        return;
+      }
+
+      pageData.forEach(page => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${page.name}</td>
+          <td>${page.views.toLocaleString()}</td>
+          <td>${page.likes.toLocaleString()}</td>
+          <td>${page.lastVisit}</td>
+          <td>${page.dailyAvg.toLocaleString()}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function generateDailyTrendsChart() {
+      const chart = document.getElementById('dailyTrendsChart');
+      chart.innerHTML = '';
+
+      // 獲取最近7天的數據
+      const last7Days = getLast7Days();
+      const dailyData = last7Days.map(day => {
+        const dayViews = Object.keys(localStorage)
+          .filter(key => key.includes(day))
+          .reduce((sum, key) => sum + parseInt(localStorage.getItem(key) || '0'), 0);
+        return { date: day, views: dayViews };
+      });
+
+      const maxViews = Math.max(...dailyData.map(d => d.views), 1);
+
+      dailyData.forEach(day => {
+        const barHeight = (day.views / maxViews) * 80 + 20;
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        bar.style.height = `${barHeight}%`;
+        bar.title = `${day.date}: ${day.views} 次訪問`;
+
+        const value = document.createElement('div');
+        value.className = 'bar-value';
+        value.textContent = day.views;
+
+        const label = document.createElement('div');
+        label.className = 'bar-label';
+        label.textContent = day.date.split('-').slice(1).join('/'); // 顯示 MM/DD
+
+        bar.appendChild(value);
+        bar.appendChild(label);
+        chart.appendChild(bar);
+      });
+    }
+
+    function getPageDisplayName(pageId) {
+      const pageNames = {
+        'v1a_home': '首頁',
+        'about_me': '關於作者',
+        'comments': '留言板',
+        'stats': '網站統計',
+        'search': '搜尋頁面',
+        'resources': '推薦資源',
+        'publications': '我的出版品',
+        'viewer_scr': 'Scratch 教材',
+        'viewer_geo': '地質教材',
+        'youtube-videos': '教學影片',  // 修改這裡
+        'monthly_oct2025': '10月地質主題'
+      };
+      return pageNames[pageId] || pageId;
+    }
+
+    function getLastVisit(pageId) {
+      // 這裡可以實現更複雜的最後訪問時間跟踪
+      return '今日';
+    }
+
+    function getLast7Days() {
+      const days = [];
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        days.push(date.toISOString().slice(0, 10));
+      }
+      return days;
+    }
+
+    function updateLastUpdated() {
+      const now = new Date();
+      document.getElementById('lastUpdated').textContent = now.toLocaleString('zh-TW');
+    }
+
+    function refreshStats() {
+      loadStats();
+      updateLastUpdated();
+      alert('統計數據已更新！');
+    }
+
+    // 使用 script.js 中的函數
+    function exportStats() {
+      if (typeof window.exportStats === 'function') {
+        window.exportStats();
+      } else {
+        alert('匯出功能暫不可用');
+      }
+    }
+
+    function adminLogin() {
+      if (typeof window.adminLogin === 'function') {
+        window.adminLogin();
+      } else {
+        alert('管理功能暫不可用');
+      }
+    }
+  </script>
+</body>
+</html>

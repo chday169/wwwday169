@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📅 每月新議題總覽 | CHDAY169 每月教學主題</title>
+  <link rel="stylesheet" href="assets/style.css">
+  
+  <!-- Open Graph 設定 -->
+  <meta property="og:title" content="📅 每月新議題總覽 | CHDAY169 教學主題">
+  <meta property="og:description" content="探索結構地質學、Scratch動畫設計等每月精選教學議題">
+  <meta property="og:image" content="https://www.chday169.url.tw/assets/images/preview_line.jpg">
+  <meta property="og:url" content="https://www.chday169.url.tw/monthly.html">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body class="container">
+  <header class="page-header">
+    <h1>📅 每月新議題總覽</h1>
+    <p class="subtitle">探索精彩的教學主題與學習資源</p>
+  </header>
+
+  <nav class="breadcrumb">
+    <a href="index.html">首頁</a> &gt; <span>每月議題</span>
+  </nav>
+
+  <main class="monthly-content">
+    <section class="intro-section">
+      <p>每個月我們都會推出新的教學主題，涵蓋 Scratch 程式設計與地質科學等領域。歡迎定期回來查看最新內容！</p>
+    </section>
+
+    <section class="monthly-list-section" aria-labelledby="monthly-topics">
+      <h2 id="monthly-topics">🗓️ 每月主題列表</h2>
+      
+      <div class="monthly-grid">
+        <!-- 2025年10月 -->
+        <article class="monthly-card">
+          <div class="monthly-header">
+            <span class="month-badge">2025年10月</span>
+            <span class="status-badge status-active">最新發布</span>
+          </div>
+          <h3>結構地質學入門</h3>
+          <p class="monthly-description">探索斷層、褶皺、地層判讀與地震關係的地質學基礎知識，透過動畫解析理解地質構造。</p>
+          <ul class="topic-tags">
+            <li class="tag">地質科學</li>
+            <li class="tag">動畫教學</li>
+            <li class="tag">基礎概念</li>
+          </ul>
+          <div class="monthly-actions">
+            <a href="oct2025.html" class="btn btn-primary">閱讀完整內容</a>
+            <span class="view-count">👁️ <span id="views_monthly_oct2025">0</span> 次瀏覽</span>
+          </div>
+        </article>
+
+        <!-- 2025年11月 -->
+        <article class="monthly-card">
+          <div class="monthly-header">
+            <span class="month-badge">2025年11月</span>
+            <span class="status-badge status-upcoming">即將推出</span>
+          </div>
+          <h3>Scratch 動畫邏輯設計</h3>
+          <p class="monthly-description">學習使用 Scratch 創建流暢的動畫效果，掌握角色移動、場景切換與互動邏輯的設計技巧。</p>
+          <ul class="topic-tags">
+            <li class="tag">Scratch</li>
+            <li class="tag">動畫設計</li>
+            <li class="tag">程式邏輯</li>
+          </ul>
+          <div class="monthly-actions">
+            <a href="nov2025.html" class="btn btn-secondary" aria-disabled="true">即將推出</a>
+            <span class="release-date">📅 預計 11/1 發布</span>
+          </div>
+        </article>
+
+        <!-- 2025年12月 -->
+        <article class="monthly-card">
+          <div class="monthly-header">
+            <span class="month-badge">2025年12月</span>
+            <span class="status-badge status-planning">規劃中</span>
+          </div>
+          <h3>地質資料視覺化</h3>
+          <p class="monthly-description">使用程式工具將地質資料轉化為直觀的視覺圖表，提升科學資料的分析與展示能力。</p>
+          <ul class="topic-tags">
+            <li class="tag">資料視覺化</li>
+            <li class="tag">地質學</li>
+            <li class="tag">程式應用</li>
+          </ul>
+          <div class="monthly-actions">
+            <button class="btn btn-outline" disabled>規劃中</button>
+            <span class="release-date">💡 主題籌備中</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="upcoming-section">
+      <h2>🚀 未來主題預告</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <span class="timeline-date">2026年1月</span>
+          <span class="timeline-title">進階遊戲設計模式</span>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-date">2026年2月</span>
+          <span class="timeline-title">地震學與防災教育</span>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-date">2026年3月</span>
+          <span class="timeline-title">AI 與程式教育</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="subscription-section">
+      <div class="subscribe-box">
+        <p>🔔 不想錯過最新內容？訂閱更新通知！</p>
+        <form class="subscription-form" onsubmit="subscribeNewsletter(event)">
+          <input type="email" placeholder="輸入您的電子郵件" required class="email-input">
+          <button type="submit" class="btn btn-primary">訂閱通知</button>
+        </form>
+        <p class="form-note">我們絕不會分享您的電子郵件，隨時可以取消訂閱。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="page-footer">
+    <div class="navigation-buttons">
+      <a href="index.html" class="btn btn-primary">⬅️ 返回首頁</a>
+      <a href="youtube-videos.html" class="btn btn-secondary">🎥 觀看教學影片</a>  <!-- 修改這裡 -->
+    </div>
+    
+    <div class="footer-info">
+      <p>&copy; 2025 CHDAY169 教材平台 | Created by chday169</p>
+      <p>📧 聯絡信箱：<a href="mailto:chday169@gmail.com">chday169@gmail.com</a></p>
+    </div>
+  </footer>
+
+  <script>
+    // 簡單的訂閱功能（前端演示）
+    function subscribeNewsletter(event) {
+      event.preventDefault();
+      const email = event.target.querySelector('.email-input').value;
+      alert(`感謝訂閱！我們會將最新內容通知傳送至：${email}`);
+      event.target.reset();
+    }
+
+    // 載入瀏覽次數統計
+    document.addEventListener('DOMContentLoaded', function() {
+      const views = localStorage.getItem('views_monthly_oct2025') || '0';
+      document.getElementById('views_monthly_oct2025').textContent = views;
+    });
+  </script>
+</body>
+</html>

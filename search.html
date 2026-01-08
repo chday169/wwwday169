@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔍 搜尋文章 | CHDAY169 教材平台搜尋功能</title>
+  <link href="assets/style.css" rel="stylesheet">
+  <script src="assets/script.js"></script>
+  <style>
+    .search-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: var(--space-md);
+    }
+
+    .search-form {
+      display: flex;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-lg);
+      flex-wrap: wrap;
+    }
+
+    #searchInput {
+      flex: 1;
+      min-width: 250px;
+      padding: var(--space-sm);
+      font-size: 1.1rem;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-medium);
+      transition: border-color 0.3s ease;
+    }
+
+    #searchInput:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+    }
+
+    .search-btn {
+      padding: var(--space-sm) var(--space-lg);
+      font-size: 1.1rem;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--radius-medium);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .search-btn:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .search-sections {
+      margin: var(--space-xl) 0;
+    }
+
+    .section-title {
+      color: var(--text-dark);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-xs);
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .keywords-container {
+      background: var(--bg-light);
+      padding: var(--space-md);
+      border-radius: var(--radius-medium);
+      margin-bottom: var(--space-lg);
+    }
+
+    .keywords-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin-top: var(--space-sm);
+    }
+
+    .keyword-tag {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+
+    .keyword-tag:hover {
+      background: var(--primary-color);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .results-container {
+      min-height: 200px;
+    }
+
+    .result-item {
+      background: var(--bg-white);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-medium);
+      padding: var(--space-md);
+      margin-bottom: var(--space-sm);
+      transition: all 0.3s ease;
+    }
+
+    .result-item:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+      border-color: var(--primary-color);
+    }
+
+    .result-item a {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      text-decoration: none;
+      display: block;
+      margin-bottom: var(--space-xs);
+    }
+
+    .result-item a:hover {
+      color: var(--primary-color);
+      text-decoration: underline;
+    }
+
+    .result-description {
+      color: var(--text-medium);
+      line-height: 1.5;
+      margin-bottom: var(--space-xs);
+    }
+
+    .result-meta {
+      display: flex;
+      gap: var(--space-md);
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    .result-type {
+      background: var(--bg-light);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: var(--space-xl);
+      color: var(--text-light);
+    }
+
+    .search-stats {
+      text-align: center;
+      margin: var(--space-md) 0;
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-sm);
+      margin: var(--space-lg) 0;
+    }
+
+    .quick-link {
+      background: var(--bg-white);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-medium);
+      padding: var(--space-md);
+      text-align: center;
+      text-decoration: none;
+      color: var(--text-dark);
+      transition: all 0.3s ease;
+    }
+
+    .quick-link:hover {
+      background: var(--primary-light);
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .search-form {
+        flex-direction: column;
+      }
+      
+      #searchInput {
+        min-width: 100%;
+      }
+      
+      .search-btn {
+        width: 100%;
+      }
+      
+      .result-meta {
+        flex-direction: column;
+        gap: var(--space-xs);
+      }
+    }
+  </style>
+</head>
+<body class="container">
+  <header class="page-header">
+    <h1>🔍 搜尋文章</h1>
+    <p class="subtitle">探索 Scratch 與地質學相關教材、每月主題與教學資源</p>
+  </header>
+
+  <nav class="breadcrumb">
+    <a href="index.html">首頁</a> &gt; <span>搜尋文章</span>
+  </nav>
+
+  <main class="search-container">
+    <section class="search-section">
+      <form id="searchForm" class="search-form">
+        <input type="text" id="searchInput" placeholder="輸入關鍵字，例如：地質、Scratch、動畫、斷層..." required>
+        <button type="submit" class="search-btn">🔍 搜尋</button>
+      </form>
+
+      <!-- 快速連結 -->
+      <div class="quick-links">
+        <a href="monthly/oct2025.html" class="quick-link">
+          <strong>🪨 結構地質學</strong>
+          <div>本月主題</div>
+        </a>
+        <a href="viewer_scr.html" class="quick-link">
+          <strong>🎨 Scratch 教學</strong>
+          <div>程式設計教材</div>
+        </a>
+        <a href="youtube-videos.html" class="quick-link">  <!-- 修改這裡 -->
+          <strong>🎥 教學影片</strong>
+          <div>YouTube 精選</div>
+        </a>
+        <a href="resources.html" class="quick-link">
+          <strong>🔗 推薦資源</strong>
+          <div>學習工具</div>
+        </a>
+      </div>
+    </section>
+
+    <section class="search-sections">
+      <div class="keywords-container">
+        <h3 class="section-title">🔍 熱門搜尋關鍵字</h3>
+        <div class="keywords-grid">
+          <span class="keyword-tag" onclick="searchKeyword('地質')">地質</span>
+          <span class="keyword-tag" onclick="searchKeyword('斷層')">斷層</span>
+          <span class="keyword-tag" onclick="searchKeyword('Scratch')">Scratch</span>
+          <span class="keyword-tag" onclick="searchKeyword('動畫')">動畫</span>
+          <span class="keyword-tag" onclick="searchKeyword('程式設計')">程式設計</span>
+          <span class="keyword-tag" onclick="searchKeyword('教學影片')">教學影片</span>
+          <span class="keyword-tag" onclick="searchKeyword('褶皺')">褶皺</span>
+          <span class="keyword-tag" onclick="searchKeyword('地震')">地震</span>
+        </div>
+      </div>
+
+      <div class="keywords-container">
+        <h3 class="section-title">📈 最近搜尋</h3>
+        <div id="keywordList" class="keywords-grid">
+          <span class="no-keywords">（尚無搜尋紀錄）</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="results-section">
+      <h3 class="section-title">📚 搜尋結果</h3>
+      <div id="searchStats" class="search-stats"></div>
+      <div id="searchResults" class="results-container">
+        <div class="no-results">
+          <p>🔍 請輸入關鍵字開始搜尋</p>
+          <p class="english-text">Enter keywords to start searching</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="page-footer">
+    <div class="navigation-buttons">
+      <a href="index.html" class="btn btn-primary">⬅️ 回首頁</a>
+      <a href="resources.html" class="btn btn-secondary">🔗 推薦資源</a>
+      <a href="monthly.html" class="btn btn-outline">📅 每月議題</a>
+    </div>
+    
+    <div class="footer-info">
+      <p>&copy; 2025 CHDAY169 教材平台 | Created by chday169</p>
+      <p class="stats-info">📊 搜尋頁面瀏覽次數: <span id="views_search">0</span></p>
+    </div>
+  </footer>
+
+  <script>
+    // 搜尋資料庫
+    const searchDatabase = [
+      {
+        title: "2025年10月｜結構地質學入門",
+        url: "monthly/oct2025.html",
+        description: "介紹斷層、褶皺、地層判讀與地震關係的地質學基礎知識，包含地質動畫解析與推薦教材。",
+        keywords: ["地質", "斷層", "褶皺", "地震", "結構地質", "地層"],
+        type: "每月主題",
+        category: "地質科學"
+      },
+      {
+        title: "Scratch 教材瀏覽器",
+        url: "viewer_scr.html",
+        description: "包含 Scratch V1A 系列教材與 PDF 閱讀功能，提供完整的程式設計學習資源。",
+        keywords: ["Scratch", "程式設計", "教學", "教材", "動畫", "V1A"],
+        type: "教材資源",
+        category: "程式設計"
+      },
+      {
+        title: "地質教材瀏覽器",
+        url: "viewer_geo.html",
+        description: "地質科學相關教材與學習資源，包含構造地質學與工程地質應用。",
+        keywords: ["地質", "教材", "構造地質", "工程地質", "學習資源"],
+        type: "教材資源",
+        category: "地質科學"
+      },
+      {
+        title: "YouTube 精選影片",
+        url: "youtube-videos.html",  // 修改這裡
+        description: "觀看地質與 Scratch 教學影片，包含 Geological V's rules 動畫解析。",
+        keywords: ["影片", "YouTube", "教學", "動畫", "地質", "Scratch"],
+        type: "多媒體",
+        category: "教學影片"
+      },
+      {
+        title: "推薦資源與合作資訊",
+        url: "resources.html",
+        description: "精選學習資源與教育合作機會，包含外部網站推薦與出版合作邀約。",
+        keywords: ["資源", "合作", "學習", "出版", "教育"],
+        type: "資源彙整",
+        category: "學習資源"
+      },
+      {
+        title: "我的出版品",
+        url: "publications.html",
+        description: "構造地質學、Excel在邊坡工程之應用、岩坡工程學等專業著作介紹。",
+        keywords: ["出版", "著作", "地質", "工程", "Excel", "岩坡"],
+        type: "出版作品",
+        category: "學術成果"
+      },
+      {
+        title: "關於作者",
+        url: "about_me.html",
+        description: "CHDAY169 的教學理念、專業背景與聯絡資訊介紹。",
+        keywords: ["作者", "關於", "背景", "聯絡", "CHDAY169"],
+        type: "個人資訊",
+        category: "關於平台"
+      }
+    ];
+
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const keywordList = document.getElementById('keywordList');
+    const searchResults = document.getElementById('searchResults');
+    const searchStats = document.getElementById('searchStats');
+    
+    let recentKeywords = JSON.parse(localStorage.getItem('recentKeywords') || '[]');
+
+    // 初始化最近搜尋顯示
+    updateRecentKeywords();
+
+    searchForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const keyword = searchInput.value.trim();
+      if (!keyword) return;
+
+      performSearch(keyword);
+    });
+
+    function searchKeyword(keyword) {
+      searchInput.value = keyword;
+      performSearch(keyword);
+    }
+
+    function performSearch(keyword) {
+      // 儲存最近搜尋
+      if (!recentKeywords.includes(keyword)) {
+        recentKeywords.unshift(keyword);
+        if (recentKeywords.length > 8) recentKeywords.pop();
+        localStorage.setItem('recentKeywords', JSON.stringify(recentKeywords));
+        updateRecentKeywords();
+      }
+
+      // 執行搜尋
+      const results = searchDatabase.filter(item => 
+        item.keywords.some(kw => kw.toLowerCase().includes(keyword.toLowerCase())) ||
+        item.title.toLowerCase().includes(keyword.toLowerCase()) ||
+        item.description.toLowerCase().includes(keyword.toLowerCase())
+      );
+
+      displayResults(results, keyword);
+      
+      // 記錄搜尋統計
+      recordSearch(keyword, results.length);
+    }
+
+    function updateRecentKeywords() {
+      if (recentKeywords.length > 0) {
+        keywordList.innerHTML = recentKeywords.map(k => 
+          `<span class="keyword-tag" onclick="searchKeyword('${k}')">${k}</span>`
+        ).join('');
+      } else {
+        keywordList.innerHTML = '<span class="no-keywords">（尚無搜尋紀錄）</span>';
+      }
+    }
+
+    function displayResults(results, keyword) {
+      if (results.length === 0) {
+        searchResults.innerHTML = `
+          <div class="no-results">
+            <p>❌ 找不到與「<strong>${keyword}</strong>」相關的內容</p>
+            <p>建議嘗試其他關鍵字，或瀏覽我們的 <a href="resources.html">推薦資源</a></p>
+          </div>`;
+        searchStats.innerHTML = `找到 0 個結果`;
+      } else {
+        searchStats.innerHTML = `找到 ${results.length} 個相關結果`;
+        searchResults.innerHTML = results.map(item => `
+          <div class="result-item">
+            <a href="${item.url}">${item.title}</a>
+            <p class="result-description">${item.description}</p>
+            <div class="result-meta">
+              <span class="result-type">${item.type}</span>
+              <span class="result-category">${item.category}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function recordSearch(keyword, resultCount) {
+      // 這裡可以記錄搜尋統計到 localStorage 或後端
+      console.log(`搜尋: ${keyword}, 結果: ${resultCount} 筆`);
+    }
+
+    // 載入瀏覽次數統計
+    document.addEventListener('DOMContentLoaded', function() {
+      const views = localStorage.getItem('views_search') || '0';
+      document.getElementById('views_search').textContent = views;
+      
+      if (typeof autoCountView === 'function') {
+        autoCountView('search');
+      }
+    });
+  </script>
+</body>
+</html>
