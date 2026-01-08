@@ -3,7 +3,7 @@
     "id": "chapter0",
     "title": "構造地質學目錄(紅色粗字體為新材料) PDF",
     "category": "V1",
-    "url": "./data_geo/pdfs/chapter0.pdf",
+    "url": "./pdfs/chapter0.pdf",
     "views": 0,
     "likes": 0
   },
@@ -11,7 +11,7 @@
     "id": "chapter1",
     "title": "精簡版第1章常用數學觀念介紹 PDF",
     "category": "V1",
-    "url": "./data_geo/pdfs/chapter1.pdf",
+    "url": "./pdfs/chapter1.pdf",
     "views": 0,
     "likes": 0
   },
@@ -19,7 +19,7 @@
     "id": "chapter3",
     "title": "張量簡介 PDF",
     "category": "V1",
-    "url": "./data_geo/pdfs/chapter3.pdf",
+    "url": "./pdfs/chapter3.pdf",
     "views": 0,
     "likes": 0
   }

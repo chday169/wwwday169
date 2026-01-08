@@ -3,7 +3,7 @@
     "id": "chapter0",
     "title": "chapter0第一冊Scratch創意程式設計入門篇導讀 PDF",
     "category": "V1A",
-    "url": "./data_scr/pdfs/v1_chapter0.pdf",
+    "url": "./pdfs/v1_chapter0.pdf",
     "views": 0,
     "likes": 0
   },
@@ -11,7 +11,7 @@
     "id": "v1_chapter1",
     "title": "節錄版chapter1Scratch程式語言介紹 PDF",
     "category": "V1A",
-    "url": "./data_scr/pdfs/v1_chapter1.pdf",
+    "url": "./pdfs/v1_chapter1.pdf",
     "views": 0,
     "likes": 0
   },
@@ -19,7 +19,7 @@
     "id": "v1_chapter2",
     "title": "節錄版chapter2Scratch及TurboWarp下載安裝 PDF",
     "category": "V1A",
-    "url": "./data_scr/pdfs/v1_chapter2.pdf",
+    "url": "./pdfs/v1_chapter2.pdf",
     "views": 0,
     "likes": 0
   },
@@ -27,7 +27,7 @@
     "id": "v1_chapter3",
     "title": "節錄版chapter3Scratch主要積木構件介紹 PDF",
     "category": "V1A",
-    "url": "./data_scr/pdfs/v1_chapter3.pdf",
+    "url": "./pdfs/v1_chapter3.pdf",
     "views": 0,
     "likes": 0
   }
