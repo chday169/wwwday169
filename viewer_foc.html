@@ -1,45 +1,50 @@
-// ==================== 焦點教材瀏覽器核心代碼 ====================
+// ==================== 焦点教材专用路径解析器 ====================
+const PathResolver = {
+  getBasePath: function() {
+    const baseUrl = window.location.origin + 
+                    window.location.pathname.substring(0, 
+                    window.location.pathname.lastIndexOf('/') + 1);
+    return {
+      manifest: baseUrl + 'data_foc/manifest.json',
+      pdfBase: baseUrl + 'data_foc/pdfs/',
+      statsKey: 'foc_stats'
+    };
+  },
+  fixPDFPath: function(url, base) {
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    return base + url;
+  }
+};
 
-// 根據當前頁面獲取正確的路徑配置
+// ==================== 焦點教材瀏覽器核心代碼 ====================
 const pathConfig = PathResolver.getBasePath();
 const manifestURL = pathConfig.manifest;
 
-let pdfList = [];
-let currentIndex = -1;
-let currentPage = 1;
-let totalPages = 1;
-let currentPDF = null;
-let hasLikedCurrentPDF = false;
+let pdfList = [], currentIndex = -1;
+let currentPage = 1, totalPages = 1, currentPDF = null;
+let hasLikedCurrentPDF = false, currentScale = 1.5;
 
 async function loadPDFList() {
   try {
-    document.getElementById('statusText').innerHTML = '<span class="loading"></span>載入教材清單中...';
-    
+    document.getElementById('statusText').innerHTML = 
+      '<span class="loading"></span>載入教材清單中...';
     console.log('正在載入 manifest:', manifestURL);
     
     const res = await fetch(manifestURL);
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
     
     const data = await res.json();
     if (!Array.isArray(data)) throw new Error('manifest.json 應為陣列格式');
     
-    // 修正PDF路徑
     pdfList = data.map((item, index) => {
       const fixedUrl = PathResolver.fixPDFPath(item.url, pathConfig.pdfBase);
       console.log(`PDF ${index}: ${item.title} -> ${fixedUrl}`);
-      
-      return {
-        ...item,
-        url: fixedUrl,
-        originalIndex: index
-      };
+      return { ...item, url: fixedUrl, originalIndex: index };
     });
     
     console.log('處理後的PDF列表:', pdfList);
-    
-    // 載入本地儲存的統計數據
     loadLocalStats();
 
     const select = document.getElementById('pdfSelect');
@@ -51,11 +56,9 @@ async function loadPDFList() {
       select.appendChild(option);
     });
 
-    if (pdfList.length > 0) {
-      showPDF(0);
-    } else {
-      document.getElementById('statusText').textContent = '❌ 沒有可用的教材';
-    }
+    if (pdfList.length > 0) showPDF(0);
+    else document.getElementById('statusText').textContent = '❌ 沒有可用的教材';
+    
   } catch (err) {
     console.error('載入錯誤：', err);
     document.getElementById('statusText').innerHTML = 
@@ -65,8 +68,8 @@ async function loadPDFList() {
 }
 
 function loadLocalStats() {
-  const stats = JSON.parse(localStorage.getItem(pathConfig.statsKey) || '{}');
-  pdfList.forEach((item, index) => {
+  const stats = JSON.parse(localStorage.getItem('foc_stats') || '{}');
+  pdfList.forEach((item) => {
     if (stats[item.title]) {
       item.views = stats[item.title].views || 0;
       item.likes = stats[item.title].likes || 0;
@@ -86,7 +89,7 @@ function saveLocalStats() {
       lastViewed: new Date().toISOString()
     };
   });
-  localStorage.setItem(pathConfig.statsKey, JSON.stringify(stats));
+  localStorage.setItem('foc_stats', JSON.stringify(stats));
 }
 
 function showPDF(index) {
@@ -99,20 +102,16 @@ function showPDF(index) {
   const fileURL = selectedItem.url;
   
   console.log('嘗試載入PDF:', fileURL);
-  document.getElementById('statusText').innerHTML = '<span class="loading"></span>載入教材中…';
+  document.getElementById('statusText').innerHTML = 
+    '<span class="loading"></span>載入教材中…';
 
   pdfjsLib.getDocument(fileURL).promise.then(pdf => {
     currentPDF = pdf;
     totalPages = pdf.numPages;
     renderPage(currentPage);
     
-    // 更新訪問次數
-    pdfList[index].views = (pdfList[index].views || 0) + 1;
-    saveLocalStats();
-    updateStats(index);
-    
     document.getElementById('statusText').textContent =
-      `📘 當前教材：${selectedItem.title} (${index + 1}/${pdfList.length})`;
+      `🌟 當前教材：${selectedItem.title} (${index + 1}/${pdfList.length})`;
   }).catch(err => {
     console.error('PDF 載入失敗：', err.message);
     document.getElementById('statusText').innerHTML = 
@@ -123,4 +122,31 @@ function showPDF(index) {
   document.getElementById('pdfSelect').value = index;
 }
 
-// 其餘函數保持不變
+// 渲染和页面控制函数（与前面相同）
+function renderPage(pageNum) {
+  if (!currentPDF) return;
+  
+  currentPDF.getPage(pageNum).then(page => {
+    const viewport = page.getViewport({ scale: currentScale });
+    const canvas = document.getElementById('pdfCanvas');
+    const context = canvas.getContext('2d');
+    
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    const renderContext = { canvasContext: context, viewport: viewport };
+    
+    page.render(renderContext).promise.then(() => {
+      document.getElementById('pageInfo').textContent = 
+        `第 ${pageNum} 頁 / 共 ${totalPages} 頁`;
+      document.getElementById('zoomLevel').textContent = 
+        Math.round(currentScale * 100) + '%';
+    });
+  }).catch(err => {
+    console.error('頁面渲染失敗：', err);
+    document.getElementById('statusText').textContent = '❌ 頁面渲染失敗';
+  });
+}
+
+// 初始化
+window.addEventListener('DOMContentLoaded', loadPDFList);
